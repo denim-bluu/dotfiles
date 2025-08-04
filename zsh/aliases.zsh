@@ -18,7 +18,6 @@ command -v rg &> /dev/null && alias grep='rg'
 alias py='python'
 alias venv='python -m venv .venv && source .venv/bin/activate'
 alias activate='[ -f .venv/bin/activate ] && source .venv/bin/activate || echo "No .venv found"'
-alias deactivate='deactivate 2>/dev/null || echo "No virtual environment active"'
 
 # Docker aliases (if docker is installed)
 command -v docker &> /dev/null && {
