@@ -1,6 +1,3 @@
-# Taps
-tap "homebrew/bundle"
-
 # Shell enhancements
 brew "zsh"
 brew "oh-my-posh"
