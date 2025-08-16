@@ -39,8 +39,13 @@ alias reload='source ~/.zshrc'
 alias zshconfig='${EDITOR:-vim} ~/.zshrc'
 alias ohmyposh='${EDITOR:-vim} ~/.config/oh-my-posh/theme.json'
 
-# Claude alias (keep your existing one)
-alias claude="/Users/joonkang/.claude/local/claude"
+# Claude alias - cross-platform
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    alias claude="/Users/joonkang/.claude/local/claude"
+else
+    # Linux/WSL - adjust path as needed
+    [ -f "$HOME/.claude/local/claude" ] && alias claude="$HOME/.claude/local/claude"
+fi
 
 # Update functions
 alias update-tools='$HOME/.config/scripts/update-tools.sh'

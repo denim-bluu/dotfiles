@@ -1,5 +1,12 @@
-# Path configuration
-export PATH="/opt/homebrew/bin:$PATH"
+# Path configuration - cross-platform
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # macOS - Homebrew paths
+    export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+else
+    # Linux/WSL - local bin paths
+    export PATH="$HOME/.local/bin:/usr/local/bin:$PATH"
+fi
+
 export PATH="$HOME/.local/bin:$PATH"
 export GOPATH=$HOME
 
@@ -54,8 +61,14 @@ command -v direnv &> /dev/null && eval "$(direnv hook zsh)"
 # FZF configuration
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-# Oh My Posh prompt
-eval "$(oh-my-posh init zsh --config $HOME/.config/oh-my-posh/theme.json)"
+# Oh My Posh prompt (only if oh-my-posh is available)
+command -v oh-my-posh &> /dev/null && eval "$(oh-my-posh init zsh --config $HOME/.config/oh-my-posh/theme.json)"
+
+# Tool environment setups
+[ -f "$HOME/.local/bin/env" ] && . "$HOME/.local/bin/env"
+
+# Linuxbrew setup (for Linux users who install Homebrew)
+[ -f "/home/linuxbrew/.linuxbrew/bin/brew" ] && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
 # Local overrides (not tracked in git)
 [ -f ~/.zshrc.local ] && source ~/.zshrc.local

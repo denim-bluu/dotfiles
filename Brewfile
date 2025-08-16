@@ -1,3 +1,6 @@
+# macOS packages via Homebrew
+# Install with: brew bundle
+
 # Shell enhancements
 brew "zsh"
 brew "oh-my-posh"

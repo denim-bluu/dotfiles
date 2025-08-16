@@ -1,0 +1,32 @@
+# Ubuntu/Debian packages for development environment
+# Install with: sudo apt update && sudo apt install -y $(cat packages-linux.txt | grep -v '^#' | tr '\n' ' ')
+
+# Shell enhancements
+zsh
+fzf
+bat
+ripgrep
+fd-find
+
+# Development tools
+git
+gh
+jq
+curl
+wget
+htop
+btop
+unzip
+build-essential
+
+# Python development
+python3
+python3-pip
+python3-venv
+pipx
+
+# Node.js (will be installed via NodeSource)
+# nodejs npm
+
+# Docker tools (will be installed separately)
+# docker.io docker-compose-plugin
