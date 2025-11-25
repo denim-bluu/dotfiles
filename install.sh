@@ -1,21 +1,35 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
-echo "🚀 Installing dotfiles..."
+DOTFILES_ROOT="$(pwd)"
+export DOTFILES_ROOT
 
-# Create necessary directories
-mkdir -p ~/.config/{oh-my-posh,zsh,scripts}
+source "$DOTFILES_ROOT/scripts/platform.sh"
+dotfiles_export_platform
 
-# Symlink files
-ln -sf "$PWD/zsh/zshrc" ~/.zshrc
-ln -sf "$PWD/oh-my-posh/theme.json" ~/.config/oh-my-posh/theme.json
-ln -sf "$PWD/zsh/aliases.zsh" ~/.config/zsh/aliases.zsh
-ln -sf "$PWD/zsh/tool-checker.zsh" ~/.config/zsh/tool-checker.zsh
-ln -sf "$PWD/scripts/update-tools.sh" ~/.config/scripts/update-tools.sh
+echo "🚀 Installing dotfiles for $DOTFILES_PLATFORM..."
 
-# Git config (only if file exists and not empty)
-if [ -s "$PWD/git/gitconfig" ]; then
-    ln -sf "$PWD/git/gitconfig" ~/.gitconfig
+mkdir -p \
+    "$HOME/.config/oh-my-posh" \
+    "$HOME/.config/zsh" \
+    "$HOME/.config/scripts"
+
+declare -a links=(
+    "$DOTFILES_ROOT/zsh/zshrc:$HOME/.zshrc"
+    "$DOTFILES_ROOT/oh-my-posh/theme.json:$HOME/.config/oh-my-posh/theme.json"
+    "$DOTFILES_ROOT/zsh/aliases.zsh:$HOME/.config/zsh/aliases.zsh"
+    "$DOTFILES_ROOT/zsh/tool-checker.zsh:$HOME/.config/zsh/tool-checker.zsh"
+    "$DOTFILES_ROOT/scripts/update-tools.sh:$HOME/.config/scripts/update-tools.sh"
+    "$DOTFILES_ROOT/scripts/platform.sh:$HOME/.config/scripts/platform.sh"
+)
+
+for mapping in "${links[@]}"; do
+    IFS=':' read -r src dst <<< "$mapping"
+    ln -sf "$src" "$dst"
+done
+
+if [ -s "$DOTFILES_ROOT/git/gitconfig" ]; then
+    ln -sf "$DOTFILES_ROOT/git/gitconfig" "$HOME/.gitconfig"
 fi
 
 echo "✅ Dotfiles installed successfully!"

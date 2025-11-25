@@ -1,12 +1,43 @@
+# Platform detection
+if [ -f "$HOME/.config/scripts/platform.sh" ]; then
+    source "$HOME/.config/scripts/platform.sh"
+    dotfiles_export_platform
+fi
+
+if [ -z "${DOTFILES_PLATFORM:-}" ]; then
+    DOTFILES_KERNEL="$(uname -s 2>/dev/null)"
+    case "$DOTFILES_KERNEL" in
+        Darwin*) DOTFILES_PLATFORM="macos" ;;
+        Linux*)
+            if grep -qi microsoft /proc/version 2>/dev/null; then
+                DOTFILES_PLATFORM="wsl"
+            else
+                DOTFILES_PLATFORM="linux"
+            fi
+            ;;
+        *) DOTFILES_PLATFORM="generic" ;;
+    esac
+    unset DOTFILES_KERNEL
+    export DOTFILES_PLATFORM
+fi
+
+if [ -z "${DOTFILES_ROOT:-}" ] && [ -n "${(%):-%N}" ]; then
+    DOTFILES_ROOT="$(cd "$(dirname "${(%):-%N}")/.." 2>/dev/null && pwd)"
+    export DOTFILES_ROOT
+fi
+
 # Path configuration
-export PATH="/opt/homebrew/bin:$PATH"
-export PATH="$HOME/.local/bin:$PATH"
-export GOPATH=$HOME
+[[ -d "$HOME/.local/bin" ]] && export PATH="$HOME/.local/bin:$PATH"
+export GOPATH="$HOME"
+
+if [ "$DOTFILES_PLATFORM" = "macos" ] && [[ -d /opt/homebrew/bin ]]; then
+    export PATH="/opt/homebrew/bin:$PATH"
+fi
 
 # Zinit setup
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 if [ ! -d "$ZINIT_HOME" ]; then
-   mkdir -p "$(dirname $ZINIT_HOME)"
+   mkdir -p "$(dirname "$ZINIT_HOME")"
    git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 fi
 
@@ -55,7 +86,10 @@ command -v direnv &> /dev/null && eval "$(direnv hook zsh)"
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # Oh My Posh prompt
-eval "$(oh-my-posh init zsh --config $HOME/.config/oh-my-posh/theme.json)"
+POSH_CONFIG="${POSH_CONFIG:-$HOME/.config/oh-my-posh/theme.json}"
+if command -v oh-my-posh &> /dev/null && [ -r "$POSH_CONFIG" ]; then
+    eval "$(oh-my-posh init zsh --config "$POSH_CONFIG")"
+fi
 
 # Local overrides (not tracked in git)
 [ -f ~/.zshrc.local ] && source ~/.zshrc.local
